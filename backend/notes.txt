@@ -1,0 +1,3 @@
+To Install 
+npm init -y
+npm i express jsonwebtoken mongoose multer bcryptjs cors dotenv exceljs nodemon
