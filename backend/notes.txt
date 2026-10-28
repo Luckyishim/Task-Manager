@@ -1,3 +1,7 @@
 To Install 
 npm init -y
-npm i express jsonwebtoken mongoose multer bcryptjs cors dotenv exceljs nodemon
+npm i express jsonwebtoken mongodb mongoose multer bcryptjs cors dotenv exceljs nodemon
+
+
+for jwt or smth
+ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
