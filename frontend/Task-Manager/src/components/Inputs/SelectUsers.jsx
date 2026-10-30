@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
 import axiosInstance from "../../utils/axiosInstance"
 import { API_PATHS } from "../../utils/apiPaths"
+import { LuUsers } from "react-icons/lu"
+import Modal from "../Modal"
 
 const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
     const [allUsers, setAllUsers] = useState([])
-    const [isModalOpen, setIsModelOpen] = useState(false)
+    const [isModalOpen, setIsModelOpen] = useState(true)
     const [tempSelectedUsers, setTempSelectedUsers] = useState([])
 
     const getAllUsers = async () => {
@@ -46,7 +48,24 @@ const SelectUsers = ({ selectedUsers, setSelectedUsers }) => {
         return () => { }
     }, [selectedUsers])
     return (
-        <div>SelectUsers</div>
+        <div className="space-y-4 mt-2 ">
+            {selectedUsersAvatars.length === 0 && (
+                <button
+                    className="card-btn"
+                    onClick={() => setIsModelOpen(true)}>
+                    <LuUsers className="text-sm" />Add Members
+                </button>
+            )}
+
+            <Modal
+            isOpen={isModalOpen}
+            onClose={()=> setIsModelOpen(false)}
+            title="Select Users"
+            >
+                <div className="space-y-4 h-[60vh] overflow-y-auto">
+                </div>
+            </Modal>
+        </div>
     )
 }
 
