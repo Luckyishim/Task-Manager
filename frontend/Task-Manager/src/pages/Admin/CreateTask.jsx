@@ -7,6 +7,8 @@ import { LuTrash2 } from "react-icons/lu"
 import { useState } from "react"
 import SelectDropdown from "../../components/Inputs/SelectDropdown"
 import SelectUsers from "../../components/Inputs/SelectUsers"
+import ToDoListInput from "../../components/Inputs/ToDoListInput"
+import AddAttachmentsInput from "../../components/Inputs/AddAttachmentsInput"
 
 const CreateTask = () => {
 
@@ -159,7 +161,49 @@ const CreateTask = () => {
                 setSelectedUsers={(value) => {
                   handleValueChange("assignedTo", value)
                 }}
-                />
+              />
+            </div>
+
+            <div className="mt-3">
+              <label className="text-xs font-medium text-slate-600">
+                TODO Checklist
+              </label>
+
+              <ToDoListInput
+                todoList={taskData?.todoChecklist}
+                setTodoList={(value) =>
+                  handleValueChange("todoChecklist", value)
+                }
+              />
+            </div>
+
+            <div className="mt-3">
+              <label className="text-xs font-medium text-slate-600">
+                Add Attachments
+              </label>
+
+              <AddAttachmentsInput
+                attachments={taskData?.attachments}
+                setAttachments={(value) =>
+                  handleValueChange("attachments", value)
+                }
+              />
+            </div>
+
+            {error &&(
+              <p className="text-xs font-medium text-red-500 mt-5">
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-end mt-7">
+              <button 
+              className="add-btn"
+              onClick={handleValueChange}
+              disabled={loading}
+              >
+                {taskId ? "UPDATE TASK" : "CREATE TASK"}
+              </button>
             </div>
           </div>
         </div>
