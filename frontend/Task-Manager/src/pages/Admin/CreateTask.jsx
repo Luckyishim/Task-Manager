@@ -9,6 +9,8 @@ import SelectDropdown from "../../components/Inputs/SelectDropdown"
 import SelectUsers from "../../components/Inputs/SelectUsers"
 import ToDoListInput from "../../components/Inputs/ToDoListInput"
 import AddAttachmentsInput from "../../components/Inputs/AddAttachmentsInput"
+import axiosInstance from "../../utils/axiosInstance"
+import { API_PATHS } from "../../utils/apiPaths"
 
 const CreateTask = () => {
 
@@ -52,12 +54,67 @@ const CreateTask = () => {
 
   //Create Task
   const createTask = async () => {
+    setLoading(true)
 
+    try {
+      const todolist = taskData.todoChecklist?.map((item) => ({
+        text: item,
+        completed: false,
+      }))
+
+      const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
+        ...taskData,
+        dueDate: new Date(taskData.dueDate).toISOString(),
+        todoChecklist: todolist
+      })
+
+      toast.success("Task Created Successfully")
+
+      clearData()
+    } catch (error) {
+      console.error("Error creating task:", error)
+      setLoading(false)
+    } finally {
+      setLoading(false)
+    }
   }
 
   //Update Task
   const updateTask = async () => {
 
+  }
+
+  const handleSubmit = async () => {
+    setError(null)
+
+    //Input Validation
+    if (!taskData.title.trim()) {
+      setError("Title is required.")
+      return
+    }
+    if (!taskData.description.trim()) {
+      setError("Description is required.")
+      return
+    }
+    if (!taskData.dueDate) {
+      setError("Due Date is required.")
+      return
+    }
+    if (taskData.assignedTo?.length === 0) {
+      setError("Task not assigned to any member")
+      return
+    }
+    if (taskData.todoChecklist?.length === 0) {
+      setError("Add atleast one todo task")
+      return
+    }
+
+    if (taskId) {
+      updateTask()
+      return
+    }
+
+    createTask();
   }
 
   //get Task info by ID
@@ -71,7 +128,7 @@ const CreateTask = () => {
   }
 
   return (
-    <DashboardLayout activeMenu={"Create Task"}>
+    <DashboardLayout activeMenu="Create Tasks">
       <div className="mt-5">
         <div className="grid grid-cols-1 md:grid-cols-4 mt-4">
           <div className="form-card col-span-4">
@@ -121,6 +178,7 @@ const CreateTask = () => {
             </div>
 
             <div className="grid grid-cols-12 gap-4 mt-2">
+              {/* Priority */}
               <div className="col-span-6 md:col-span-4">
                 <label className="text-xs font-medium text-slate-600">
                   Priority
@@ -133,37 +191,37 @@ const CreateTask = () => {
                   placeholder="Select Priority"
                 />
               </div>
+
+              {/* Due Date */}
+              <div className="col-span-6 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
+                  Due Date
+                </label>
+
+                <input
+                  className="form-input"
+                  value={taskData.dueDate || ""}
+                  onChange={({ target }) =>
+                    handleValueChange("dueDate", target.value)
+                  }
+                  type="date"
+                />
+              </div>
+
+              {/* Assign To */}
+              <div className="col-span-12 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
+                  Assign To
+                </label>
+
+                <SelectUsers
+                  selectedUsers={taskData.assignedTo}
+                  setSelectedUsers={(value) => {
+                    handleValueChange("assignedTo", value)
+                  }}
+                />
+              </div>
             </div>
-
-            <div className="col-span-6 md:col-span-4">
-              <label className="text-xs font-medium text-slate-600">
-                Due Date
-              </label>
-
-              <input
-                placeholder="Create App UI"
-                className="form-input"
-                value={taskData.dueDate}
-                onChange={({ target }) =>
-                  handleValueChange("dueDate", target.value)
-                }
-                type="date"
-              />
-            </div>
-
-            <div className="col-span-12 md:col-span-3">
-              <label className="text-xs font-medium text-slate-600">
-                Assign To
-              </label>
-
-              <SelectUsers
-                selectedUsers={taskData.assignedTo}
-                setSelectedUsers={(value) => {
-                  handleValueChange("assignedTo", value)
-                }}
-              />
-            </div>
-
             <div className="mt-3">
               <label className="text-xs font-medium text-slate-600">
                 TODO Checklist
@@ -190,17 +248,17 @@ const CreateTask = () => {
               />
             </div>
 
-            {error &&(
+            {error && (
               <p className="text-xs font-medium text-red-500 mt-5">
                 {error}
               </p>
             )}
 
             <div className="flex justify-end mt-7">
-              <button 
-              className="add-btn"
-              onClick={handleValueChange}
-              disabled={loading}
+              <button
+                className="add-btn"
+                onClick={handleSubmit}
+                disabled={loading}
               >
                 {taskId ? "UPDATE TASK" : "CREATE TASK"}
               </button>
