@@ -82,7 +82,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap mt-5 ">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mt-5 ">
           <InfoCard
             label="Total Tasks"
             value={addThousandsSeperator(

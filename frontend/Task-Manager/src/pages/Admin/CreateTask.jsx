@@ -102,7 +102,7 @@ const CreateTask = () => {
           todoChecklist: todolist
         })
 
-      toast.success("Task Updated Succcessfully")
+      toast.success("Task Updated Successfully")
     } catch (error) {
       console.error("Error creating task:", error)
       setLoading(false)

@@ -106,17 +106,17 @@ const ManageTasks = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-          {allTasks?.map((item, index) => (
+          {allTasks?.map((item) => (
             <TaskCard
               key={item._id}
               title={item.title}
-              description={item.descripton}
+              description={item.description}
               priority={item.priority}
               status={item.status}
               progress={item.progress}
               createdAt={item.createdAt}
               dueDate={item.dueDate}
-              assignedTo={item.assignedTo?.map((item) => item.profileImageUrl)}
+              assignedTo={item.assignedTo?.map((user) => user.profileImageUrl)}
               attachmentCount={item.attachments?.length || 0}
               completedTodoCount={item.completedTodoCount || 0}
               todoChecklist={item.todoChecklist || []}
