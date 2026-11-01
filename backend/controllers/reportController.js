@@ -24,7 +24,7 @@ const exportTasksReport = async (req, res) => {
 
         tasks.forEach((task) => {
             const assignedTo = task.assignedTo
-                .mao((user) => `${user.name} (${user.email})`)
+                .map((user) => `${user.name} (${user.email})`)
                 .join(",")
             worksheet.addRow({
                 _id: task._id,
@@ -41,6 +41,9 @@ const exportTasksReport = async (req, res) => {
             "Content-Type",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+        res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="tasks_report.xlsx"')
         return workbook.xlsx.write(res).then(() => {
             res.end()
         })
@@ -93,30 +96,30 @@ const exportUsersReport = async (req, res) => {
         const workbook = new excelJS.Workbook()
         const worksheet = workbook.addWorksheet("User Task Report")
 
-        worksheet.columns=[
-            {header:"User Name", key:"name", width: 30},
-            {header:"Email", key:"email", width: 40},
-            {header:"Total Assigned Tasks", key:"taskCount", width: 20},
-            {header:"Pending Tasks", key:"pendingTasks", width: 20},
-            {header:"In Progress Tasks", key:"inProgressTasks", width: 20},
-            {header:"Completed Tasks", key:"completedTasks", width: 20},
+        worksheet.columns = [
+            { header: "User Name", key: "name", width: 30 },
+            { header: "Email", key: "email", width: 40 },
+            { header: "Total Assigned Tasks", key: "taskCount", width: 20 },
+            { header: "Pending Tasks", key: "pendingTasks", width: 20 },
+            { header: "In Progress Tasks", key: "inProgressTasks", width: 20 },
+            { header: "Completed Tasks", key: "completedTasks", width: 20 },
         ]
 
-        Object.values(userTaskMap).forEach((user)=>{
+        Object.values(userTaskMap).forEach((user) => {
             worksheet.addRow(user)
         })
-        
+
         res.setHeader(
             "Content-Type",
-            "application/vnd.openxmlforamts-officedoucement.spreadsheetml.sheet"
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
         res.setHeader(
             "Content-Disposition",
-            'attachment, filename ="users_report.xlsx"'
+            'attachment; filename ="users_report.xlsx"'
         )
 
-        return workbook.xlsx.write(res).then(()=>{
+        return workbook.xlsx.write(res).then(() => {
             res.end
         })
 
