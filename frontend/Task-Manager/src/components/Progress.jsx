@@ -1,20 +1,29 @@
-
-
 const Progress = ({ progress, status }) => {
     const getColor = () => {
         switch (status) {
             case "In Progress":
-                return "text-cyan-500 bg-cyan-50 border border-cyan-500/10"
+                return "bg-cyan-500"
             case "Completed":
-                return "text-indigo-500 bg-indigo-50 border border-indigo-500/10"
+                return "bg-indigo-500"
             default:
-                return "text-violet-500 bg-violet-50 border border-violet-500/10"
+                return "bg-violet-500"
         }
     }
 
+    const progressValue = status === "Completed"
+        ? 100
+        : Math.min(100, Math.max(0, Number(progress) || 0))
+
     return (
         <div className="w-full bg-gray-200 rounded-full h-1.5">
-            <div className={`${getColor()} h-1.5 rounded-full text-center text-xs font-medium`} style={{ width: `${progress}%` }}>
+            <div
+                className={`${getColor()} h-1.5 rounded-full transition-[width]`}
+                role="progressbar"
+                aria-valuenow={progressValue}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                style={{ width: `${progressValue}%` }}
+            >
             </div>
         </div> 
     )
