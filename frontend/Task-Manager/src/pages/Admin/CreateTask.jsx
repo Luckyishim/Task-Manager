@@ -64,7 +64,7 @@ const CreateTask = () => {
         completed: false,
       }))
 
-      const response = await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
+      await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
         dueDate: new Date(taskData.dueDate).toISOString(),
         todoChecklist: todolist
@@ -95,7 +95,7 @@ const CreateTask = () => {
         }
       })
 
-      const response = await axiosInstance.put(API_PATHS.TASKS.UPDATE_TASK(taskId),
+      await axiosInstance.put(API_PATHS.TASKS.UPDATE_TASK(taskId),
         {
           ...taskData,
           dueDate: new Date(taskData.dueDate).toISOString(),
@@ -155,7 +155,7 @@ const CreateTask = () => {
         const taskInfo = response.data
         setCurrentTask(taskInfo)
 
-        setTaskData((prevState) => ({
+        setTaskData({
           title: taskInfo.title,
           description: taskInfo.description,
           priority: taskInfo.priority,
@@ -165,7 +165,7 @@ const CreateTask = () => {
           assignedTo: taskInfo?.assignedTo?.map((item) => item?._id) || [],
           todoChecklist: taskInfo?.todoChecklist?.map((item) => item?.text) || [],
           attachments: taskInfo?.attachments || [],
-        }))
+        })
       }
     } catch (error) {
       console.error("Error fetching users:", error)

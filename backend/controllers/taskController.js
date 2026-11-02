@@ -1,5 +1,19 @@
 const Task = require("../models/Task")
 
+const isTaskAssignedToUser = (task, userId) =>
+    task.assignedTo.some((assignedUserId) => assignedUserId.toString() === userId.toString())
+
+const syncTaskProgress = (task) => {
+    const totalItems = task.todoChecklist.length
+    const completedItems = task.todoChecklist.filter((item) => item.completed).length
+    task.progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+    task.status = task.progress === 100
+        ? "Completed"
+        : task.progress > 0
+            ? "In Progress"
+            : "Pending"
+}
+
 //@desc Get all tasks (Asmin: all, User: only assigned tasks)
 //@route GET /api/tasks/
 //@access Private
@@ -78,13 +92,15 @@ const getTasks = async (req, res) => {
 //@access Private
 const getTasksByID = async (req, res) => {
     try {
-        const task = await Task.findById(req.params.id).populate(
-            "assignedTo",
-            "name email profileImageUrl"
-        )
+        const task = await Task.findById(req.params.id)
 
         if (!task) return res.status(404).json({ message: "Task not found" })
 
+        if (req.user.role !== "admin" && !isTaskAssignedToUser(task, req.user._id)) {
+            return res.status(403).json({ message: "Not authorized to view this task" })
+        }
+
+        await task.populate("assignedTo", "name email profileImageUrl")
         res.json(task);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message })
@@ -142,7 +158,10 @@ const updateTask = async (req, res) => {
         task.description = req.body.description || task.description;
         task.priority = req.body.priority || task.priority;
         task.dueDate = req.body.dueDate || task.dueDate;
-        task.todoChecklist = req.body.todoChecklist || task.todoChecklist;
+        if (Array.isArray(req.body.todoChecklist)) {
+            task.todoChecklist = req.body.todoChecklist
+            syncTaskProgress(task)
+        }
         task.attachments = req.body.attachments || task.attachments;
 
         if (req.body.assignedTo) {
@@ -185,9 +204,7 @@ const updateTaskStatus = async (req, res) => {
         const task = await Task.findById(req.params.id)
         if (!task) return res.status(404).json({ message: "Task not found" })
 
-        const isAssigned = task.assignedTo.some(
-            (userId) => userId.toString() === req.user._id.toString()
-        )
+        const isAssigned = isTaskAssignedToUser(task, req.user._id)
 
         if (!isAssigned && req.user.role !== "admin") {
             return res.status(403).json({ message: "Not authorized" })
@@ -219,28 +236,12 @@ const updatedTaskCheckList = async (req, res) => {
 
         if (!task) return res.status(404).json({ message: "Task not found" })
 
-        if (!task.assignedTo.includes(req.user._id) && req.user.role !== "admin") {
+        if (!isTaskAssignedToUser(task, req.user._id) && req.user.role !== "admin") {
             return res.status(403).json({ message: "Not authorized to update checklist" })
         }
 
         task.todoChecklist = todoChecklist; //Replace with updated Checklist
-
-        //Auto-update progress based on checklist completion
-        const completedCount = task.todoChecklist.filter(
-            (item) => item.completed
-        ).length
-        const totalItems = task.todoChecklist.length
-        task.progress = totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0
-
-
-        //Auto-mark task as completed if all items are checked
-        if (task.progress === 100) {
-            task.status = "Completed"
-        } else if (task.progress > 0) {
-            task.status = "In Progress"
-        } else {
-            task.status = "Pending"
-        }
+        syncTaskProgress(task)
 
         await task.save()
         const updatedTask = await Task.findById(req.params.id).populate(

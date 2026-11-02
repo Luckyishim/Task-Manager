@@ -2,7 +2,6 @@ import { createContext, useState, useEffect } from 'react'
 import { API_PATHS } from '../utils/apiPaths'
 import axiosInstance from '../utils/axiosInstance'
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const UserContext = createContext()
 
 const UserProvider = ({ children }) => {
