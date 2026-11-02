@@ -42,7 +42,7 @@ const MyTasks = () => {
   }
 
   const handleClick = (taskId) => {
-    navigate(`/user/task-details/${taskId}`,) 
+    navigate(`/user/tasks/${taskId}`,) 
   }
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const MyTasks = () => {
     return () => { }
   }, [filterStatus])
   return (
-    <DashboardLayout activeMenu="Manage Tasks">
+    <DashboardLayout activeMenu="My Tasks">
       <div className="my-5" >
         <div className="flex flex-col md:flex-row md:items-center justify-between">
           <h2 className="text-xl md:text-xl font-medium">My Tasks</h2>
