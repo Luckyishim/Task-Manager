@@ -120,7 +120,7 @@ const exportUsersReport = async (req, res) => {
         )
 
         return workbook.xlsx.write(res).then(() => {
-            res.end
+            res.end()
         })
 
     } catch (error) {
